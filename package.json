@@ -1,0 +1,76 @@
+{
+  "name": "tempo-studio",
+  "productName": "拍间 Tempo",
+  "version": "1.1.2",
+  "private": true,
+  "description": "安静、精准的离线节拍器与简易鼓机",
+  "main": "main.cjs",
+  "author": "Waylon",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ust-Waylon/paijian-tempo.git"
+  },
+  "homepage": "https://github.com/Ust-Waylon/paijian-tempo",
+  "bugs": {
+    "url": "https://github.com/Ust-Waylon/paijian-tempo/issues"
+  },
+  "keywords": [
+    "metronome",
+    "drum-machine",
+    "music-practice",
+    "electron",
+    "offline"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test tests/clock.test.cjs",
+    "test:desktop": "node scripts/qa.cjs && node scripts/drums-qa.cjs",
+    "test:packaged": "node scripts/smoke.cjs",
+    "icons": "node scripts/icon.cjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "pack": "electron-builder --mac dir --publish never",
+    "preview": "node scripts/preview.cjs"
+  },
+  "devDependencies": {
+    "electron": "45.1.0",
+    "electron-builder": "26.18.0",
+    "playwright": "1.62.1",
+    "sharp": "0.35.5",
+    "prettier": "3.9.10"
+  },
+  "build": {
+    "appId": "local.waylon.tempo-studio",
+    "productName": "拍间 Tempo",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "index.html",
+      "src/**/*",
+      "audio/**/*",
+      "assets/**/*",
+      "LICENSE",
+      "THIRD_PARTY_NOTICES.md"
+    ],
+    "mac": {
+      "category": "public.app-category.music",
+      "icon": "build/icon.icns",
+      "identity": null,
+      "target": [
+        "dir"
+      ],
+      "extendInfo": {
+        "CFBundleDisplayName": "拍间 Tempo",
+        "CFBundleName": "拍间 Tempo"
+      }
+    }
+  }
+}

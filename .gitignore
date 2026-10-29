@@ -1,0 +1,14 @@
+node_modules
+dist/
+dist-*/
+.DS_Store
+qa/
+build/icon.iconset/
+*.app
+*.dmg
+*.zip
+*.blockmap
+npm-debug.log*
+.env
+.env.*
+!.env.example

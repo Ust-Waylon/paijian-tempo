@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
+    />
+    <meta name="theme-color" content="#ebeff2" />
+    <meta
+      name="description"
+      content="拍间 Tempo，一款安静、精准的离线练习节拍器。"
+    />
+    <title>拍间 Tempo</title>
+    <link rel="icon" href="assets/mark.svg" type="image/svg+xml" />
+    <link
+      rel="preload"
+      href="assets/fonts/InstrumentSans-Regular.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+    <link rel="stylesheet" href="src/style.css" />
+    <link rel="stylesheet" href="src/drums.css" />
+    <script type="module" src="src/app.mjs"></script>
+  </head>
+  <body>
+    <svg
+      class="icon-definitions"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <symbol id="i-play" viewBox="0 0 24 24">
+        <path d="m9 5 11 7-11 7Z" fill="currentColor" stroke="none" />
+      </symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24">
+        <path d="M8 5v14M16 5v14" stroke-width="3.2" />
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14" />
+      </symbol>
+      <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14" /></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24">
+        <path d="m6 6 12 12M6 18 18 6" />
+      </symbol>
+      <symbol id="i-expand" viewBox="0 0 24 24">
+        <path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" />
+      </symbol>
+      <symbol id="i-contract" viewBox="0 0 24 24">
+        <path d="M3 8h5V3m8 0v5h5M3 16h5v5m8 0v-5h5" />
+      </symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24">
+        <path d="m15 3 6 6-3 1-4 4v4l-3-3-7 6 5-8-3-3h4l4-4Z" />
+      </symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24">
+        <path d="M20.6 14A9 9 0 0 1 10 3.4 9 9 0 1 0 20.6 14Z" />
+      </symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="4" />
+        <path
+          d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"
+        />
+      </symbol>
+      <symbol id="i-keyboard" viewBox="0 0 24 24">
+        <rect x="2.5" y="5" width="19" height="14" rx="3" />
+        <path
+          d="M6 9h.1m4 0h.1m4 0h.1m4 0h.1M6 12h.1m4 0h.1m4 0h.1m4 0h.1M8 15h8"
+        />
+      </symbol>
+      <symbol id="i-volume" viewBox="0 0 24 24">
+        <path
+          d="m11 4-6 5H2v6h3l6 5ZM15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"
+        />
+      </symbol>
+      <symbol id="i-mute" viewBox="0 0 24 24">
+        <path d="m11 4-6 5H2v6h3l6 5Zm5 5 6 6m0-6-6 6" />
+      </symbol>
+      <symbol id="i-reset" viewBox="0 0 24 24">
+        <path d="M3 10a9 9 0 1 1 1 7M3 4v6h6" />
+      </symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3 2" />
+      </symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24">
+        <path d="m9 5 7 7-7 7" />
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24">
+        <path d="m5 12 4 4L19 6" />
+      </symbol>
+      <symbol id="i-tap" viewBox="0 0 24 24">
+        <path
+          d="M12 20v-7m-3 3 3-3 3 3M5 10a7 7 0 0 1 14 0M8 10a4 4 0 0 1 8 0"
+        />
+      </symbol>
+      <symbol id="i-sliders" viewBox="0 0 24 24">
+        <path
+          d="M5 3v4m0 4v10M12 3v10m0 4v4M19 3v4m0 4v10M2 7h6m1 10h6m1-10h6"
+        />
+      </symbol>
+      <symbol id="i-drums" viewBox="0 0 24 24">
+        <ellipse cx="12" cy="10" rx="8" ry="3" />
+        <path d="M4 10v7c0 4 16 4 16 0v-7M8 13v6m8-6v6M6 2l8 5m4-5-5 5" />
+      </symbol>
+      <symbol id="i-note1" viewBox="0 0 40 30">
+        <ellipse
+          cx="17"
+          cy="23"
+          rx="4"
+          ry="2.7"
+          transform="rotate(-20 17 23)"
+          fill="currentColor"
+          stroke="none"
+        />
+        <path d="M21 22V5" stroke-width="1.8" />
+      </symbol>
+      <symbol id="i-note2" viewBox="0 0 40 30">
+        <path d="M13 22V7l17-3v15M13 10l17-3" stroke-width="1.6" />
+        <ellipse
+          cx="9.5"
+          cy="23"
+          rx="4"
+          ry="2.7"
+          transform="rotate(-20 9.5 23)"
+          fill="currentColor"
+          stroke="none"
+        />
+        <ellipse
+          cx="26.5"
+          cy="20"
+          rx="4"
+          ry="2.7"
+          transform="rotate(-20 26.5 20)"
+          fill="currentColor"
+          stroke="none"
+        />
+      </symbol>
+      <symbol id="i-note3" viewBox="0 0 40 30">
+        <path d="M9 23V8h24v15M21 8v15M9 11h24" stroke-width="1.5" />
+        <text
+          x="20"
+          y="5.5"
+          font-size="7"
+          text-anchor="middle"
+          fill="currentColor"
+          stroke="none"
+        >
+          3
+        </text>
+        <ellipse
+          cx="6"
+          cy="24"
+          rx="3.3"
+          ry="2.4"
+          fill="currentColor"
+          stroke="none"
+        />
+        <ellipse
+          cx="18"
+          cy="24"
+          rx="3.3"
+          ry="2.4"
+          fill="currentColor"
+          stroke="none"
+        />
+        <ellipse
+          cx="30"
+          cy="24"
+          rx="3.3"
+          ry="2.4"
+          fill="currentColor"
+          stroke="none"
+        />
+      </symbol>
+      <symbol id="i-note4" viewBox="0 0 40 30">
+        <path d="M8 23V6h27v17M17 6v17M26 6v17M8 10h27" stroke-width="1.5" />
+        <ellipse
+          cx="5.2"
+          cy="24"
+          rx="3"
+          ry="2.3"
+          fill="currentColor"
+          stroke="none"
+        />
+        <ellipse
+          cx="14.2"
+          cy="24"
+          rx="3"
+          ry="2.3"
+          fill="currentColor"
+          stroke="none"
+        />
+        <ellipse
+          cx="23.2"
+          cy="24"
+          rx="3"
+          ry="2.3"
+          fill="currentColor"
+          stroke="none"
+        />
+        <ellipse
+          cx="32.2"
+          cy="24"
+          rx="3"
+          ry="2.3"
+          fill="currentColor"
+          stroke="none"
+        />
+      </symbol>
+    </svg>
+
+    <div class="windowbar" aria-hidden="true"><span>拍间 Tempo</span></div>
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <img src="assets/mark.svg" width="40" height="40" alt="" />
+          <div>
+            <h1>拍间<span class="brand-en">tempo</span></h1>
+            <p>留一点时间，给练习。</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button
+            class="icon-button"
+            id="themeButton"
+            type="button"
+            aria-label="切换深色界面"
+            title="切换深色界面"
+          >
+            <svg><use href="#i-moon" /></svg>
+          </button>
+          <button
+            class="icon-button desktop-only"
+            id="pinButton"
+            type="button"
+            aria-label="窗口置顶"
+            aria-pressed="false"
+            title="窗口置顶"
+          >
+            <svg><use href="#i-pin" /></svg>
+          </button>
+          <span class="action-divider"></span>
+          <button
+            class="quiet-button focus-button"
+            id="focusButton"
+            type="button"
+            aria-pressed="false"
+            title="专注模式 · F"
+          >
+            <svg><use href="#i-expand" /></svg
+            ><span id="focusLabel">专注模式</span>
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <div class="instrument">
+          <section class="tempo-panel" aria-label="速度与播放控制">
+            <div class="panel-topline">
+              <div class="mode-switch" role="group" aria-label="播放模式">
+                <button type="button" data-mode="metronome" aria-pressed="true">
+                  节拍器</button
+                ><button type="button" data-mode="drums" aria-pressed="false">
+                  <svg><use href="#i-drums" /></svg>鼓机
+                </button>
+              </div>
+              <span class="status" id="status"
+                ><span></span><span id="statusText">准备就绪</span></span
+              >
+            </div>
+            <div class="dial-wrap" id="dialWrap">
+              <svg
+                class="tempo-dial"
+                id="tempoDial"
+                viewBox="0 0 400 400"
+                role="slider"
+                tabindex="0"
+                aria-label="速度，拖动圆环或用方向键调节"
+                aria-valuemin="30"
+                aria-valuemax="240"
+                aria-valuenow="120"
+              >
+                <circle class="dial-outer-line" cx="200" cy="200" r="180" />
+                <g id="dialTicks"></g>
+                <path class="dial-track" id="dialTrack" />
+                <path class="dial-value" id="dialValue" />
+                <circle class="dial-cap" id="dialCap" r="4.5" />
+              </svg>
+              <div class="dial-face">
+                <svg
+                  class="phase-ring"
+                  viewBox="0 0 280 280"
+                  aria-hidden="true"
+                >
+                  <circle cx="140" cy="140" r="136" />
+                  <circle
+                    class="phase-progress"
+                    id="phaseProgress"
+                    cx="140"
+                    cy="140"
+                    r="136"
+                    pathLength="1"
+                    stroke-dasharray="1"
+                    stroke-dashoffset="1"
+                  />
+                </svg>
+                <div class="bpm-readout">
+                  <label class="bpm-unit" for="bpmInput">BEATS PER MINUTE</label
+                  ><input
+                    id="bpmInput"
+                    type="number"
+                    min="30"
+                    max="240"
+                    step="1"
+                    value="120"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    aria-label="每分钟拍数，30 至 240"
+                  /><span class="tempo-italian" id="tempoName">Allegro</span>
+                </div>
+              </div>
+              <span class="dial-hint" id="dialHint">拖动圆环调速</span>
+            </div>
+            <div class="tempo-adjust">
+              <button
+                class="round-button"
+                id="bpmDown"
+                type="button"
+                aria-label="减慢 1 BPM"
+                title="减慢 · ↓"
+              >
+                <svg><use href="#i-minus" /></svg>
+              </button>
+              <p>
+                <span id="tempoDescription">轻快地</span
+                ><span class="tempo-range">30 — 240 BPM</span>
+              </p>
+              <button
+                class="round-button"
+                id="bpmUp"
+                type="button"
+                aria-label="加快 1 BPM"
+                title="加快 · ↑"
+              >
+                <svg><use href="#i-plus" /></svg>
+              </button>
+            </div>
+            <div class="transport">
+              <button
+                class="play-button"
+                id="playButton"
+                type="button"
+                aria-pressed="false"
+              >
+                <svg><use id="playIcon" href="#i-play" /></svg
+                ><span id="playLabel">开始练习</span><kbd>space</kbd></button
+              ><button
+                class="tap-button"
+                id="tapButton"
+                type="button"
+                title="连续拍击，自动计算速度 · T"
+              >
+                <svg><use href="#i-tap" /></svg><span>拍击定速</span
+                ><kbd>T</kbd>
+              </button>
+            </div>
+            <p class="tap-feedback" id="tapFeedback" aria-live="polite">
+              跟着你的节奏，慢慢来。
+            </p>
+          </section>
+
+          <aside class="controls-panel" aria-label="节奏与音色设置">
+            <section class="control-section drum-section" aria-label="鼓机节奏">
+              <div class="section-heading">
+                <h2>鼓组节奏<span>GROOVES</span></h2>
+                <span class="drum-meter">4 / 4</span>
+              </div>
+              <div
+                class="drum-patterns"
+                id="drumPatterns"
+                role="group"
+                aria-label="经典鼓组节奏"
+              ></div>
+              <div
+                class="drum-grid"
+                id="drumGrid"
+                aria-label="鼓组节奏图"
+              ></div>
+              <p class="drum-grid-hint">
+                <span>点击鼓名可静音</span><span id="drumFeel">八分踩镲</span>
+              </p>
+              <p class="sr-only" id="drumDescription"></p>
+            </section>
+            <section class="control-section rhythm-section">
+              <div class="section-heading">
+                <h2>节奏<span>RHYTHM</span></h2>
+                <label class="meter-select"
+                  ><span class="sr-only">拍号</span
+                  ><select id="meterSelect">
+                    <option value="free">自由拍</option>
+                    <option value="1/4">1 / 4</option>
+                    <option value="2/4">2 / 4</option>
+                    <option value="3/4">3 / 4</option>
+                    <option value="4/4" selected>4 / 4</option>
+                    <option value="5/4">5 / 4</option>
+                    <option value="6/8">6 / 8</option>
+                    <option value="7/8">7 / 8</option>
+                  </select></label
+                >
+              </div>
+              <div
+                class="beat-pattern"
+                id="beatPattern"
+                role="group"
+                aria-label="逐拍重音设置"
+              ></div>
+              <p class="control-hint">
+                点击切换重音、轻音、静音<span class="beat-unit" id="beatUnit"
+                  >♩ = 一拍</span
+                >
+              </p>
+            </section>
+
+            <section class="control-section subdivision-section">
+              <div class="section-heading">
+                <h2>分拍<span>SUBDIVISION</span></h2>
+                <span class="setting-value" id="subdivisionValue"
+                  >每拍 1 声</span
+                >
+              </div>
+              <div class="subdivision-options" role="group" aria-label="分拍">
+                <button
+                  type="button"
+                  data-subdivision="1"
+                  class="selected"
+                  aria-pressed="true"
+                  aria-label="不分拍，每拍一声"
+                >
+                  <svg><use href="#i-note1" /></svg><span>一拍</span>
+                </button>
+                <button
+                  type="button"
+                  data-subdivision="2"
+                  aria-pressed="false"
+                  aria-label="二等分，每拍两声"
+                >
+                  <svg><use href="#i-note2" /></svg><span>二等分</span>
+                </button>
+                <button
+                  type="button"
+                  data-subdivision="3"
+                  aria-pressed="false"
+                  aria-label="三连音，每拍三声"
+                >
+                  <svg><use href="#i-note3" /></svg><span>三连音</span>
+                </button>
+                <button
+                  type="button"
+                  data-subdivision="4"
+                  aria-pressed="false"
+                  aria-label="四等分，每拍四声"
+                >
+                  <svg><use href="#i-note4" /></svg><span>四等分</span>
+                </button>
+              </div>
+            </section>
+
+            <section class="control-section sound-section">
+              <div class="section-heading">
+                <h2>
+                  <span class="sound-heading-label" id="soundHeadingLabel"
+                    >音色</span
+                  ><span id="soundHeadingEnglish">SOUND</span>
+                </h2>
+              </div>
+              <div class="sound-options" role="group" aria-label="节拍音色">
+                <button
+                  type="button"
+                  data-sound="wood"
+                  aria-pressed="true"
+                  class="selected"
+                >
+                  木块</button
+                ><button
+                  type="button"
+                  data-sound="electronic"
+                  aria-pressed="false"
+                >
+                  电子</button
+                ><button type="button" data-sound="rim" aria-pressed="false">
+                  鼓边</button
+                ><button type="button" data-sound="soft" aria-pressed="false">
+                  轻敲
+                </button>
+              </div>
+              <div class="volume-control">
+                <button
+                  type="button"
+                  class="icon-button"
+                  id="muteButton"
+                  aria-label="静音"
+                  aria-pressed="false"
+                  title="静音 · M"
+                >
+                  <svg><use id="volumeIcon" href="#i-volume" /></svg></button
+                ><label class="sr-only" for="volumeInput">音量</label
+                ><input
+                  id="volumeInput"
+                  type="range"
+                  min="0"
+                  max="100"
+                  value="70"
+                /><output id="volumeValue" for="volumeInput"
+                  >70<span>%</span></output
+                >
+              </div>
+            </section>
+
+            <section class="control-section practice-section">
+              <div class="practice-row">
+                <div>
+                  <h2>渐进练习</h2>
+                  <p id="practiceSummary">每 8 小节加快 2 BPM</p>
+                </div>
+                <button
+                  type="button"
+                  class="switch"
+                  id="practiceToggle"
+                  role="switch"
+                  aria-checked="false"
+                  aria-label="渐进练习"
+                >
+                  <span></span>
+                </button>
+              </div>
+              <button
+                type="button"
+                class="practice-settings"
+                id="practiceSettings"
+              >
+                <svg><use href="#i-sliders" /></svg><span>练习设置</span
+                ><span class="practice-target" id="practiceTarget"
+                  >目标 160 BPM</span
+                ><svg class="chevron"><use href="#i-chevron" /></svg>
+              </button>
+            </section>
+          </aside>
+        </div>
+
+        <section class="practice-bar" aria-label="常用节奏和练习计时">
+          <div class="presets">
+            <span class="presets-label">常用节奏</span>
+            <div id="presetList" class="preset-list"></div>
+            <button
+              class="add-preset"
+              type="button"
+              id="addPreset"
+              aria-label="保存当前节奏"
+              title="保存当前速度、拍号、分拍和重音"
+            >
+              <svg><use href="#i-plus" /></svg>
+            </button>
+          </div>
+          <div class="session">
+            <svg><use href="#i-clock" /></svg
+            ><span class="session-label">本次练习</span
+            ><output id="sessionTime">00:00</output
+            ><button
+              type="button"
+              class="icon-button reset-button"
+              id="resetSession"
+              aria-label="重置本次练习计时"
+              title="重置计时"
+            >
+              <svg><use href="#i-reset" /></svg>
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <footer class="app-footer">
+        <span class="footer-note"
+          ><span class="connection-dot"></span>离线可用，随时开练。</span
+        ><button type="button" class="shortcuts-button" id="shortcutsButton">
+          <svg><use href="#i-keyboard" /></svg><span>键盘快捷键</span
+          ><kbd>?</kbd>
+        </button>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <dialog id="settingsDialog" aria-labelledby="settingsTitle">
+      <form id="practiceForm" class="dialog-content">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">PRACTICE</p>
+            <h2 id="settingsTitle">给进步一点节奏</h2>
+          </div>
+          <button
+            type="button"
+            class="icon-button"
+            data-close
+            aria-label="关闭练习设置"
+          >
+            <svg><use href="#i-close" /></svg>
+          </button>
+        </div>
+        <p class="dialog-description">从舒服的速度开始，逐步靠近你的目标。</p>
+        <div class="practice-fields">
+          <label
+            >每隔多少小节<input
+              id="practiceEvery"
+              type="number"
+              min="1"
+              max="64"
+              value="8"
+              required
+            /><span>小节</span></label
+          ><label
+            >每次加快<input
+              id="practiceStep"
+              type="number"
+              min="1"
+              max="20"
+              value="2"
+              required
+            /><span>BPM</span></label
+          ><label
+            >目标速度<input
+              id="practiceGoal"
+              type="number"
+              min="30"
+              max="240"
+              value="160"
+              required
+            /><span>BPM</span></label
+          >
+        </div>
+        <label class="timer-field"
+          ><span
+            ><svg><use href="#i-clock" /></svg>定时结束<span class="timer-help"
+              >只累计播放时间</span
+            ></span
+          ><select id="durationSelect">
+            <option value="0">不设限</option>
+            <option value="300">5 分钟</option>
+            <option value="600">10 分钟</option>
+            <option value="900">15 分钟</option>
+            <option value="1800">30 分钟</option>
+            <option value="3600">60 分钟</option>
+          </select></label
+        >
+        <p class="field-error" id="practiceError" aria-live="polite"></p>
+        <button type="submit" class="dialog-primary">保存设置</button>
+      </form>
+    </dialog>
+
+    <dialog id="presetDialog" aria-labelledby="presetTitle">
+      <form id="presetForm" class="dialog-content">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">YOUR RHYTHM</p>
+            <h2 id="presetTitle">留住这个节奏</h2>
+          </div>
+          <button
+            class="icon-button"
+            type="button"
+            data-close
+            aria-label="关闭保存节奏"
+          >
+            <svg><use href="#i-close" /></svg>
+          </button>
+        </div>
+        <p class="dialog-description" id="presetDescription"></p>
+        <label class="preset-name-label" for="presetName">节奏名称</label
+        ><input
+          id="presetName"
+          type="text"
+          maxlength="12"
+          placeholder="例如：爬格子、那首喜欢的歌"
+          required
+          autocomplete="off"
+        />
+        <p class="control-hint">保存当前模式、速度和节奏设置。</p>
+        <p class="field-error" id="presetError" aria-live="polite"></p>
+        <button type="submit" class="dialog-primary">保存节奏</button>
+      </form>
+    </dialog>
+
+    <dialog id="shortcutsDialog" aria-labelledby="shortcutsTitle">
+      <div class="dialog-content">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">STAY IN THE FLOW</p>
+            <h2 id="shortcutsTitle">双手不必离开太远</h2>
+          </div>
+          <button
+            class="icon-button"
+            type="button"
+            data-close
+            aria-label="关闭快捷键"
+          >
+            <svg><use href="#i-close" /></svg>
+          </button>
+        </div>
+        <dl class="shortcut-list">
+          <div>
+            <dt>开始 / 暂停</dt>
+            <dd><kbd>space</kbd></dd>
+          </div>
+          <div>
+            <dt>拍击定速</dt>
+            <dd><kbd>T</kbd></dd>
+          </div>
+          <div>
+            <dt>速度 ± 1 BPM</dt>
+            <dd><kbd>↑</kbd><kbd>↓</kbd></dd>
+          </div>
+          <div>
+            <dt>速度 ± 10 BPM</dt>
+            <dd><kbd>shift</kbd><kbd>↑ / ↓</kbd></dd>
+          </div>
+          <div>
+            <dt>专注模式</dt>
+            <dd><kbd>F</kbd></dd>
+          </div>
+          <div>
+            <dt>静音 / 取消静音</dt>
+            <dd><kbd>M</kbd></dd>
+          </div>
+          <div>
+            <dt>退出专注 / 关闭弹窗</dt>
+            <dd><kbd>esc</kbd></dd>
+          </div>
+        </dl>
+        <p class="control-hint">直接点击大数字输入速度，也可以拖动圆环调节。</p>
+      </div>
+    </dialog>
+  </body>
+</html>

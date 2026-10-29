@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" fill="none">
+<defs><linearGradient id="tile" x1="180" y1="80" x2="850" y2="980" gradientUnits="userSpaceOnUse"><stop stop-color="#486271"/><stop offset="1" stop-color="#203744"/></linearGradient><linearGradient id="face" x1="300" y1="240" x2="730" y2="840" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#d8e3e8"/></linearGradient><linearGradient id="needle" x1="680" y1="230" x2="450" y2="800" gradientUnits="userSpaceOnUse"><stop stop-color="#f6b098"/><stop offset="1" stop-color="#d77c5d"/></linearGradient><filter id="shadow"><feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#122933" flood-opacity=".3"/></filter></defs>
+<rect x="70" y="70" width="884" height="884" rx="205" fill="url(#tile)"/>
+<rect x="72" y="72" width="880" height="880" rx="203" stroke="#c1d3dc" stroke-opacity=".22" stroke-width="4"/>
+<path d="M240 750 452 274c9-20 17-29 40-29h42c23 0 31 9 40 29l212 476" stroke="url(#face)" stroke-width="47" stroke-linecap="round" stroke-linejoin="round" filter="url(#shadow)"/>
+<path d="M328 603h364" stroke="url(#face)" stroke-width="32" stroke-linecap="round"/>
+<path d="m492 746 172-462" stroke="url(#needle)" stroke-width="39" stroke-linecap="round" filter="url(#shadow)"/>
+<circle cx="492" cy="746" r="35" fill="#e9997d"/><circle cx="492" cy="746" r="10" fill="#f6d4c3"/>
+</svg>

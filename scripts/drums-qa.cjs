@@ -234,7 +234,11 @@ const {
     for (const track of ['kick', 'snare', 'hat'])
       await page.locator(`[data-drum-track="${track}"]`).click();
     assert.equal(await page.locator('.drum-lane.muted').count(), 3);
-    await page.waitForTimeout(200);
+    await page.waitForFunction(() => {
+      const data = new Float32Array(2048);
+      window.__drumAnalyser.getFloatTimeDomainData(data);
+      return data.every((sample) => sample === 0);
+    });
     const peak = await page.evaluate(() => {
       const a = new Float32Array(2048);
       window.__drumAnalyser.getFloatTimeDomainData(a);

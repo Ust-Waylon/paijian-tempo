@@ -184,11 +184,15 @@ const { preparePage, cleanupProfile } = require('./desktop-test.cjs');
     await app.evaluate(({ BrowserWindow }) =>
       BrowserWindow.getAllWindows()[0].minimize(),
     );
-    await page.waitForTimeout(2200);
+    await page.waitForFunction(
+      (previous) =>
+        document.querySelector('#sessionTime').textContent !== previous,
+      before,
+      { polling: 100 },
+    );
     await app.evaluate(({ BrowserWindow }) =>
       BrowserWindow.getAllWindows()[0].restore(),
     );
-    await page.waitForTimeout(200);
     assert.notEqual(await page.locator('#sessionTime').textContent(), before);
     assert.equal(
       await page.locator('#playButton').getAttribute('aria-pressed'),

@@ -46,6 +46,7 @@ function packagedExecutable(root) {
 
 async function preparePage(page) {
   if (!process.env.CI && process.env.TEMPO_TEST_SILENT_AUDIO !== '1') return;
+  page.setDefaultTimeout(60000);
   // CI has no physical speakers. This keeps the real-time audio graph and
   // AudioWorklet running while routing only the hardware output to a null sink.
   const silentAudio = () => {

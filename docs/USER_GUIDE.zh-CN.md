@@ -1,10 +1,12 @@
 # 拍间 Tempo
 
-为日常练琴制作的离线 Mac 节拍器与简易鼓机。界面和音频引擎独立编写，采用本地字体与矢量图形，无需账号或网络。
+为日常练琴制作的离线 Windows / macOS 节拍器与简易鼓机。界面和音频引擎独立编写，采用本地字体与矢量图形，无需账号或网络。
 
 ## 使用
 
-从项目根目录运行 `npm ci`、`npm start`，或打开构建后的 `dist/mac-arm64/拍间 Tempo.app`。
+从 [GitHub 下载页](https://github.com/Ust-Waylon/paijian-tempo/releases/latest) 选择对应系统和处理器的版本：普通 Intel / AMD Windows 电脑选择 x64 `.exe`，Windows ARM 电脑选择 arm64 `.exe`；Mac 选择 Apple Silicon（arm64）或 Intel（x64）`.dmg`。Windows 双击安装，Mac 打开 DMG 后将应用拖入「应用程序」。也提供 ZIP 版本。安装和运行无需 Node.js。
+
+开发者可从项目根目录运行 `npm ci`、`npm start`。
 
 - **速度：**30–240 BPM。点击数字输入，拖动刻度环，或用加减按钮微调。
 - **模式：**在左上角切换「节拍器 / 鼓机」，共用速度、拍击定速、播放暂停、音量与练习设置。
@@ -51,7 +53,7 @@ npm test
 npm run pack
 ```
 
-当前成品是 Apple Silicon 版本。开发工具及版本固定在项目根目录的 `package.json` 和 `package-lock.json` 中。
+发布包含 Windows x64 / ARM64 和 macOS Apple Silicon / Intel 四种版本，每种都在对应系统和架构上构建并检查安装后的程序。开发工具及版本固定在项目根目录的 `package.json` 和 `package-lock.json` 中。
 
 `npm test` 包含 16 项音频测试，覆盖时钟、原有音色、六种鼓组、Shuffle 摇摆、变速、小节衔接、鼓件静音、开闭镲、练习计时与异常输入。`scripts/qa.cjs` 检查原有节拍器交互，`scripts/drums-qa.cjs` 检查鼓机交互、实际音频输出和旧版数据兼容；运行 `npm ci` 会安装这些检查需要的 Playwright。测试使用独立的临时资料目录，不改动日常练习设置。
 

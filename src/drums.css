@@ -267,6 +267,32 @@
     padding-bottom: 16px;
   }
 }
+@media (min-width: 720px) and (max-height: 740px) {
+  .tempo-panel {
+    padding-top: 12px;
+  }
+  .drum-section,
+  .drum-mode .sound-section,
+  .drum-mode .practice-section {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .drum-section .section-heading {
+    margin-bottom: 10px;
+  }
+  .drum-pattern-button {
+    min-height: 40px;
+    padding: 6px 9px;
+    gap: 3px;
+  }
+  .drum-grid {
+    margin-top: 10px;
+    row-gap: 3px;
+  }
+  .drum-grid-hint {
+    margin-top: 8px;
+  }
+}
 @media (max-width: 900px) and (min-width: 720px) {
   .mode-switch button {
     padding: 0 8px;

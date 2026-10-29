@@ -1916,6 +1916,63 @@ button:disabled {
     margin-top: 18px;
   }
 }
+@media (min-width: 720px) and (max-height: 740px) {
+  .desktop .app-header {
+    height: 60px;
+  }
+  .desktop.platform-win32 .app-header {
+    height: 58px;
+  }
+  .tempo-panel,
+  .focus-mode .tempo-panel {
+    padding: 12px 24px 10px;
+  }
+  .dial-wrap,
+  .focus-mode .dial-wrap {
+    width: min(100%, 300px);
+    margin-top: 4px;
+  }
+  #bpmInput,
+  .focus-mode .dial-face #bpmInput {
+    font-size: 82px;
+  }
+  .transport,
+  .focus-mode .transport {
+    margin-top: 12px;
+  }
+  .tap-feedback {
+    margin-top: 6px;
+    height: 18px;
+  }
+  .control-section {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .section-heading,
+  .rhythm-section .section-heading,
+  .sound-section .section-heading {
+    margin-bottom: 10px;
+  }
+  .beat-button,
+  .beat-pattern[data-many='true'] .beat-button,
+  .subdivision-options button {
+    height: 54px;
+  }
+  .control-hint {
+    margin-top: 7px;
+  }
+  .volume-control {
+    margin-top: 8px;
+  }
+  .practice-settings {
+    margin-top: 8px;
+  }
+  .practice-bar,
+  .focus-mode .practice-bar {
+    padding-top: 12px;
+    padding-bottom: 10px;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *:before,

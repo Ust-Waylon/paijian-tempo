@@ -34,7 +34,9 @@ const {
     );
     assert.equal(await app.evaluate(() => process.arch), process.arch);
     const archive = await app.evaluate(({ app }) => app.getAppPath());
-    const files = asar.listPackage(archive);
+    const files = asar
+      .listPackage(archive)
+      .map((file) => file.replaceAll('\\', '/'));
     const notices = [
       'LICENSE',
       'THIRD_PARTY_NOTICES.md',

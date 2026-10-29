@@ -160,12 +160,12 @@ const { preparePage, cleanupProfile } = require('./desktop-test.cjs');
         document.querySelector('#playButton').getAttribute('aria-pressed') ===
         'true',
     );
-    await page.waitForTimeout(800);
+    await page.waitForFunction(() => window.__tempoTicks.length >= 2);
     await page.evaluate(() => {
       const until = performance.now() + 1200;
       while (performance.now() < until) {}
     });
-    await page.waitForTimeout(300);
+    await page.waitForFunction(() => window.__tempoTicks.length >= 5);
     const ticks = await page.evaluate(() =>
       window.__tempoTicks.map((t) => t.audioTime),
     );

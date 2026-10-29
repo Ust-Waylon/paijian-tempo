@@ -95,7 +95,11 @@ const {
         document.querySelector('#playButton').getAttribute('aria-pressed') ===
         'true',
     );
-    await page.waitForTimeout(1200);
+    await page.waitForFunction(
+      () =>
+        window.__packagedTicks.length >= 3 &&
+        document.querySelector('#sessionTime').textContent !== '00:00',
+    );
     assert.match(
       await page.locator('#statusText').textContent(),
       /第 \d+ 小节/,

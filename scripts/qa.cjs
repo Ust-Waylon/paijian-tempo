@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { preparePage, cleanupProfile } = require('./desktop-test.cjs');
 
 (async () => {
   const root = path.resolve(__dirname, '..');
@@ -21,6 +22,7 @@ const path = require('node:path');
   };
   try {
     const page = await app.firstWindow();
+    await preparePage(page);
     page.on('pageerror', (error) => errors.push(error.message));
     page.on('console', (message) => {
       if (message.type() === 'error') errors.push(message.text());
@@ -34,7 +36,7 @@ const path = require('node:path');
       sw: document.documentElement.scrollWidth,
     }));
     assert.ok(size.sh <= size.h, JSON.stringify(size));
-    assert.equal(size.sw, size.w);
+    assert.ok(size.sw <= size.w);
     await page.screenshot({ path: path.join(root, 'qa/desktop-light.png') });
     record('Default desktop window displays every control without scrolling');
 
@@ -293,7 +295,7 @@ const path = require('node:path');
     console.log(`Completed ${report.length} interaction checks.`);
   } finally {
     await app.close();
-    fs.rmSync(profile, { recursive: true, force: true });
+    cleanupProfile(profile);
   }
 })().catch((error) => {
   console.error(error);

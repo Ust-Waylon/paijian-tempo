@@ -1,6 +1,7 @@
 * text=auto eol=lf
 *.png binary
 *.icns binary
+*.ico binary
 *.ttf binary
 # Preserve upstream license files byte-for-byte.
 assets/fonts/LICENSE-*.txt -whitespace

@@ -3,19 +3,23 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
+const asar = require('@electron/asar');
+const {
+  packagedExecutable,
+  preparePage,
+  cleanupProfile,
+} = require('./desktop-test.cjs');
 (async () => {
   const root = path.resolve(__dirname, '..');
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'tempo-packaged-'));
-  const executable = path.join(
-    root,
-    'dist/mac-arm64/拍间 Tempo.app/Contents/MacOS/拍间 Tempo',
-  );
+  const executable = packagedExecutable(root);
   const app = await electron.launch({
     executablePath: executable,
     env: { ...process.env, TEMPO_TEST_PROFILE: profile },
   });
   try {
     const page = await app.firstWindow();
+    await preparePage(page);
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
     page.on('console', (m) => {
@@ -24,6 +28,20 @@ const os = require('node:os');
     await page.waitForSelector('.beat-button');
     await page.evaluate(() => document.fonts.ready);
     assert.equal(await app.evaluate(({ app }) => app.isPackaged), true);
+    assert.equal(
+      await app.evaluate(({ app }) => app.getVersion()),
+      require('../package.json').version,
+    );
+    assert.equal(await app.evaluate(() => process.arch), process.arch);
+    const archive = await app.evaluate(({ app }) => app.getAppPath());
+    const files = asar.listPackage(archive);
+    const notices = [
+      'LICENSE',
+      'THIRD_PARTY_NOTICES.md',
+      'assets/fonts/LICENSE-Instrument-Sans.txt',
+      'assets/fonts/LICENSE-Instrument-Serif.txt',
+    ].every((file) => files.includes(`/${file}`));
+    assert.ok(notices, 'The installed app includes its license notices');
     assert.ok(
       await page.evaluate(
         () => document.documentElement.scrollHeight <= innerHeight,
@@ -53,6 +71,22 @@ const os = require('node:os');
       JSON.stringify(contrast),
     );
     await page.screenshot({ path: path.join(root, 'qa/desktop-light.png') });
+    await page.evaluate(() => {
+      const Base = window.AudioWorkletNode;
+      window.__packagedTicks = [];
+      window.AudioWorkletNode = class extends Base {
+        constructor(context, ...args) {
+          super(context, ...args);
+          this.port.addEventListener('message', (event) => {
+            if (event.data.type === 'tick')
+              window.__packagedTicks.push(event.data);
+          });
+          window.__packagedAnalyser = context.createAnalyser();
+          window.__packagedAnalyser.fftSize = 2048;
+          this.connect(window.__packagedAnalyser);
+        }
+      };
+    });
     await page.locator('#playButton').click();
     await page.waitForFunction(
       () =>
@@ -67,6 +101,32 @@ const os = require('node:os');
     assert.notEqual(await page.locator('#sessionTime').textContent(), '00:00');
     await page.screenshot({ path: path.join(root, 'qa/desktop-playing.png') });
     await page.locator('#playButton').click();
+    await page.locator('[data-mode="drums"]').click();
+    await page.locator('[data-drum-pattern="rock"]').click();
+    await page.locator('#playButton').click();
+    await page.waitForFunction(() =>
+      window.__packagedTicks.some((tick) => tick.mode === 'drums'),
+    );
+    await page.waitForFunction(() => {
+      const data = new Float32Array(2048);
+      window.__packagedAnalyser.getFloatTimeDomainData(data);
+      return data.some((sample) => Math.abs(sample) > 0.001);
+    });
+    await page.locator('[data-drum-pattern="shuffle"]').click();
+    await page.waitForFunction(() =>
+      window.__packagedTicks.some(
+        (tick) => tick.mode === 'drums' && tick.drumPattern === 'shuffle',
+      ),
+    );
+    const shuffle = await page.evaluate(() =>
+      window.__packagedTicks.find(
+        (tick) => tick.mode === 'drums' && tick.drumPattern === 'shuffle',
+      ),
+    );
+    assert.equal(shuffle.step, 0);
+    assert.equal(shuffle.subdivision, 3);
+    await page.locator('#playButton').click();
+    await page.locator('[data-mode="metronome"]').click();
     await page.locator('#themeButton').click();
     await page.waitForTimeout(240);
     await page.locator('#resetSession').click();
@@ -107,7 +167,7 @@ const os = require('node:os');
     );
   } finally {
     await app.close();
-    fs.rmSync(profile, { recursive: true, force: true });
+    cleanupProfile(profile);
   }
 })().catch((error) => {
   console.error(error);

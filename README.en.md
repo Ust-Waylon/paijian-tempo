@@ -2,12 +2,29 @@
 
 **Make a little time for practice.**
 
-An offline Mac metronome and simple drum machine. No account, ads, or streamed
+An offline Windows and macOS metronome and simple drum machine. No account, ads, or streamed
 audio. Open it and start practicing.
 
 [简体中文](README.md) · [Contributing](CONTRIBUTING.md) · [MIT License](LICENSE)
 
 ![Paijian Tempo in light mode](docs/images/metronome-light.png)
+
+## Download and install
+
+**Installers are ready to use. Node.js and the source code are not required.**
+
+| Platform                    | Installer                                                                                                           | Portable archive                                                                                              |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Windows · Intel / AMD (x64) | [EXE setup](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-win-x64.exe)   | [ZIP](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-win-x64.zip)   |
+| Windows · ARM64             | [EXE setup](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-win-arm64.exe) | [ZIP](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-win-arm64.zip) |
+| macOS · Apple Silicon       | [DMG](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-mac-arm64.dmg)       | [ZIP](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-mac-arm64.zip) |
+| macOS · Intel               | [DMG](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-mac-x64.dmg)         | [ZIP](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-mac-x64.zip)   |
+
+[All releases and SHA-256 checksums](https://github.com/Ust-Waylon/paijian-tempo/releases/latest)
+
+On Windows, run the installer for a per-user installation, or extract the ZIP and run `拍间 Tempo.exe`. On macOS, open the DMG and drag the app to Applications.
+
+These community packages have no trusted publisher certificate or Apple notarization. Your operating system may ask you to confirm the publisher; verify the download came from this repository before continuing.
 
 ## Features
 
@@ -48,23 +65,27 @@ and utility labels.
 
 ## Run from source
 
-Requires **Node.js 22.12 or later**. The verified desktop platform is **macOS on
-Apple Silicon**.
+Development requires **Node.js 22.12 or later**. Windows and macOS share the same application source.
 
 ```sh
 npm ci
 npm start
 ```
 
-Build the Mac app:
+Build an unpacked application for the current platform:
 
 ```sh
 npm run pack
 ```
 
-On Apple Silicon, the app is written to `dist/mac-arm64/拍间 Tempo.app`. This is
-a local build without Apple notarization. Compiled application bundles are not
-included in the repository.
+Build installers on the corresponding operating system:
+
+```sh
+npm run dist:win     # Windows EXE setup and ZIP
+npm run dist:mac     # macOS DMG and ZIP
+```
+
+Outputs are written to `dist/`. Append `-- --x64` or `-- --arm64` to select an architecture. The release workflow builds and verifies each package on native Windows x64, Windows ARM64, Apple Silicon, and Intel Mac runners before publishing.
 
 For a browser preview, run `npm run preview` and open the local URL printed in
 the terminal. Window pinning and the application shortcut menu require the
@@ -95,13 +116,12 @@ subdivision, and groove changes take effect at bar boundaries.
 
 ```sh
 npm test                 # 16 audio and clock checks
-npm run test:desktop     # Real Electron windows and audio output on a Mac
+npm run test:desktop     # Real Electron windows and audio graphs on Windows/macOS
+npm run test:packaged    # Check a built application
 npm run format:check
 ```
 
-Desktop checks use temporary profiles and leave normal practice preferences
-alone. See [CONTRIBUTING.md](CONTRIBUTING.md) for the project layout and optional
-packaged-app checks.
+Desktop checks use temporary profiles and leave normal practice preferences alone. CI routes hardware output to a silent sink while testing the real audio graph and clock. Release checks also install and uninstall the Windows setup, mount and copy the Mac DMG, and launch every extracted ZIP. See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## License
 

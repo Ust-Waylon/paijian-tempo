@@ -1,7 +1,7 @@
 {
   "name": "tempo-studio",
   "productName": "拍间 Tempo",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "private": true,
   "description": "安静、精准的离线节拍器与简易鼓机",
   "main": "main.cjs",
@@ -33,7 +33,9 @@
     "icons": "node scripts/icon.cjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "pack": "electron-builder --mac dir --publish never",
+    "pack": "electron-builder --dir --publish never",
+    "dist:mac": "electron-builder --mac dmg zip --publish never",
+    "dist:win": "electron-builder --win nsis zip --publish never",
     "preview": "node scripts/preview.cjs"
   },
   "devDependencies": {
@@ -63,14 +65,36 @@
     "mac": {
       "category": "public.app-category.music",
       "icon": "build/icon.icns",
-      "identity": null,
+      "identity": "-",
+      "hardenedRuntime": false,
       "target": [
-        "dir"
+        "dmg",
+        "zip"
       ],
+      "artifactName": "Paijian-Tempo-${version}-mac-${arch}.${ext}",
       "extendInfo": {
         "CFBundleDisplayName": "拍间 Tempo",
         "CFBundleName": "拍间 Tempo"
       }
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "Paijian-Tempo-${version}-win-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "拍间 Tempo",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": false
     }
   }
 }

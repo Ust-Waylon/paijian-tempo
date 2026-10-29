@@ -1011,7 +1011,10 @@ window.tempoDesktop?.onAction((action) => {
   if (action === 'help' && !document.querySelector('dialog[open]'))
     openDialog('shortcutsDialog');
 });
-if (window.tempoDesktop) document.body.classList.add('desktop');
+if (window.tempoDesktop) {
+  document.body.classList.add('desktop');
+  document.body.classList.add(`platform-${window.tempoDesktop.platform}`);
+}
 renderDial();
 renderTempo();
 renderBeats();

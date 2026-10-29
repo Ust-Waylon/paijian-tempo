@@ -3,19 +3,19 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const {
+  packagedExecutable,
+  preparePage,
+  cleanupProfile,
+} = require('./desktop-test.cjs');
 
 (async () => {
   const root = path.resolve(__dirname, '..');
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'tempo-drums-'));
   const packaged = process.env.TEMPO_PACKAGED === '1';
-  const buildDir = process.env.TEMPO_BUILD_DIR || 'dist';
   const app = await electron.launch({
     executablePath: packaged
-      ? path.join(
-          root,
-          buildDir,
-          'mac-arm64/拍间 Tempo.app/Contents/MacOS/拍间 Tempo',
-        )
+      ? packagedExecutable(root)
       : process.env.TEMPO_ELECTRON || require('electron'),
     args: packaged ? [] : [root],
     env: { ...process.env, TEMPO_TEST_PROFILE: profile },
@@ -30,6 +30,7 @@ const path = require('node:path');
   let page;
   try {
     page = await app.firstWindow();
+    await preparePage(page);
     if (packaged) {
       assert.equal(await app.evaluate(({ app }) => app.isPackaged), true);
       const version = require('../package.json').version;
@@ -176,13 +177,20 @@ const path = require('node:path');
     pass(
       'Changing BPM changes the actual drum clock without restarting playback',
     );
-    await page.keyboard.press('t');
-    await page.waitForTimeout(600);
-    await page.keyboard.press('t');
-    await page.waitForTimeout(600);
-    await page.keyboard.press('t');
+    const tapTimes = await page.evaluate(async () => {
+      const times = [];
+      for (let i = 0; i < 3; i += 1) {
+        times.push(performance.now());
+        document.querySelector('#tapButton').click();
+        if (i < 2) await new Promise((resolve) => setTimeout(resolve, 600));
+      }
+      return times;
+    });
     const tapped = Number(await page.locator('#bpmInput').inputValue());
-    assert.ok(tapped >= 95 && tapped <= 105, String(tapped));
+    assert.ok(
+      Math.abs(tapped - Math.round(120000 / (tapTimes[2] - tapTimes[0]))) <= 1,
+      String(tapped),
+    );
     pass('Tap tempo also controls the drum machine');
 
     await setBpm(120);
@@ -402,7 +410,7 @@ const path = require('node:path');
     throw error;
   } finally {
     await app.close();
-    fs.rmSync(profile, { recursive: true, force: true });
+    cleanupProfile(profile);
   }
 })().catch((error) => {
   console.error(error);

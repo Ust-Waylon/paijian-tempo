@@ -186,6 +186,12 @@ kbd {
 .desktop .windowbar {
   display: flex;
 }
+.platform-win32 .windowbar {
+  display: none;
+}
+.desktop.platform-win32 .app-header {
+  height: 70px;
+}
 .desktop-only {
   display: none !important;
 }

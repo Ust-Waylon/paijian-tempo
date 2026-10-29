@@ -1,0 +1,115 @@
+name: Build installers and release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.release.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Check whether this version needs a release
+        id: release
+        run: node scripts/release-info.cjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  build:
+    needs: metadata
+    if: needs.metadata.outputs.publish == 'true'
+    name: ${{ matrix.os }} ${{ matrix.arch }}
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-2025
+            os: win
+            arch: x64
+          - runner: windows-11-arm
+            os: win
+            arch: arm64
+          - runner: macos-15
+            os: mac
+            arch: arm64
+          - runner: macos-15-intel
+            os: mac
+            arch: x64
+    runs-on: ${{ matrix.runner }}
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm test
+      - name: Check the desktop app on the native operating system
+        run: npm run test:desktop
+      - name: Build installers and ZIP archives
+        run: npm run dist:${{ matrix.os }} -- --${{ matrix.arch }}
+      - name: Install, launch, verify audio, and uninstall
+        run: node scripts/verify-installers.cjs
+      - name: Collect installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            dist/Paijian-Tempo-*.exe
+            dist/Paijian-Tempo-*.dmg
+            dist/Paijian-Tempo-*.zip
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+      - name: Keep test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checks-${{ matrix.os }}-${{ matrix.arch }}
+          path: qa/
+          if-no-files-found: ignore
+          retention-days: 3
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: packages-*
+          merge-multiple: true
+          path: release-assets
+      - name: Validate assets, generate checksums, and publish the release
+        run: node scripts/publish-release.cjs release-assets
+        env:
+          GH_TOKEN: ${{ github.token }}

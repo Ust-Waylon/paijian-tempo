@@ -71,6 +71,8 @@ ipcMain.on('tempo:theme', (event, dark) => {
 });
 
 app.whenReady().then(() => {
+  if (process.platform === 'win32')
+    app.setAppUserModelId('local.waylon.tempo-studio');
   Menu.setApplicationMenu(
     Menu.buildFromTemplate([
       ...(isMac

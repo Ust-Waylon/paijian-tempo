@@ -2,11 +2,28 @@
 
 **留一点时间，给练习。**
 
-一款离线运行的 Mac 节拍器与简易鼓机。没有账号、广告和网络音频，打开就能开始练习。
+一款离线运行的 Windows / macOS 节拍器与简易鼓机。没有账号、广告和网络音频，打开就能开始练习。
 
 [English](README.en.md) · [使用指南](docs/USER_GUIDE.zh-CN.md) · [参与开发](CONTRIBUTING.md) · [MIT License](LICENSE)
 
 ![拍间 Tempo 浅色界面](docs/images/metronome-light.png)
+
+## 下载安装
+
+**普通用户直接下载安装包即可，不需要安装 Node.js 或下载源码。**
+
+| 系统 / 芯片                   | 安装包                                                                                                                      | 免安装 / 压缩包                                                                                               |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Windows · Intel / AMD（x64）  | [下载 EXE 安装程序](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-win-x64.exe)   | [ZIP](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-win-x64.zip)   |
+| Windows · ARM64               | [下载 EXE 安装程序](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-win-arm64.exe) | [ZIP](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-win-arm64.zip) |
+| Mac · Apple Silicon（M 系列） | [下载 DMG](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-mac-arm64.dmg)          | [ZIP](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-mac-arm64.zip) |
+| Mac · Intel                   | [下载 DMG](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-mac-x64.dmg)            | [ZIP](https://github.com/Ust-Waylon/paijian-tempo/releases/download/v1.2.0/Paijian-Tempo-1.2.0-mac-x64.zip)   |
+
+[全部版本与 SHA-256 校验值](https://github.com/Ust-Waylon/paijian-tempo/releases/latest)
+
+Windows 运行 `.exe` 按向导安装，默认安装到当前用户。免安装版解压后运行「拍间 Tempo.exe」。Mac 打开 `.dmg`，将「拍间 Tempo」拖入 Applications。
+
+安装包目前未使用受信任的开发者证书签名，Mac 未做 Apple 公证。若系统要求确认开发者，请先确认文件来自本仓库，再按系统提示允许打开。
 
 ## 能做什么
 
@@ -37,20 +54,27 @@
 
 ## 从源码运行
 
-需要 **Node.js 22.12 或更新版本**。目前已验证的平台是 **macOS / Apple Silicon**。
+开发需要 **Node.js 22.12 或更新版本**。Windows 与 macOS 使用相同源码。
 
 ```sh
 npm ci
 npm start
 ```
 
-构建 Mac 应用：
+构建当前系统的未打包应用目录：
 
 ```sh
 npm run pack
 ```
 
-Apple Silicon 的产物位于 `dist/mac-arm64/拍间 Tempo.app`。这是本地构建，未做 Apple 公证。仓库不包含编译后的安装包。
+生成可分发的安装包（在对应操作系统运行）：
+
+```sh
+npm run dist:win     # Windows EXE 安装程序和 ZIP
+npm run dist:mac     # macOS DMG 和 ZIP
+```
+
+文件输出至 `dist/`。加上 `-- --x64` 或 `-- --arm64` 可指定架构。GitHub Release 自动在 Windows x64、Windows ARM64、Mac Apple Silicon 和 Mac Intel 环境中分别构建、验证安装及启动后发布。
 
 浏览器预览：
 
@@ -81,11 +105,12 @@ npm run preview
 
 ```sh
 npm test                 # 16 项音频与时钟测试
-npm run test:desktop     # 在 Mac 上检查真实窗口与音频输出
+npm run test:desktop     # 在 Windows / macOS 上检查真实窗口与音频输出
+npm run test:packaged    # 检查已构建的应用
 npm run format:check     # 代码格式
 ```
 
-桌面测试使用独立的临时资料目录，不修改日常练习设置。更多说明见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+桌面测试使用独立的临时资料目录，不修改日常练习设置。CI 通过静音输出通道检查真实音频图与时钟，不依赖 runner 上的扬声器。发布还会验证 Windows 安装 / 卸载、Mac DMG 挂载与拷贝安装，以及四种 ZIP 解压后的应用。更多说明见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## 开源许可
 
